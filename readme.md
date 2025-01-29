@@ -17,14 +17,16 @@ While the TC3/ADC/DMA is collecting one buffer with 512 samples, in the other bu
 
 ![Alt-Text](Counter.png)
 
-when the macro STREAM_DATA in main.c is defined by deleting the // 
+when the macro STREAM_DATA in __main.c__ is defined by deleting the // 
+
 //#define STREAM_DATA   
+
 the last two buffers of 512 samples and the Goertzel Result is streamed to the Terminal in ASCII.  
 
 ![Alt-Text](StreamData.png)
 
 
-This data can be received by the Pyhton Script __disp_adc.py__ to visualize the data in the buffer. keep in mind, that this is not continuesly,the sampling at 50kHz into 2*512 Samples achieves a total sample time of 20.48 milli seconds. Then the sampling is paused and the data is streamed to the Terminal. When streaming is ready, it restarts the sampling. 
+This data can be received by the Pyhton Script __disp_adc.py__ to visualize the data in the buffer. Keep in mind, that in STREAM_DATA the data is not continuesly sampled anymore,the sampling at 50kHz into 2*512 Samples achieves a total sample time of 20.48 milli seconds. Then the sampling is paused and the data is streamed to the Terminal. When streaming is ready, it restarts the sampling. 
 
 The blue line is the actual sampled data. this data is put into a Goertzel Algorithm and then the output is out into a simple low pass filter. This is then the red line. 
 when the output of the low pass does reached a certain value, the internal values of the Goertzel are reset and this event is counted as a "pulse detection"
@@ -33,6 +35,23 @@ when the output of the low pass does reached a certain value, the internal value
 
 
 You can use the project https://github.com/zabooh/waveform_generator.git to generated the pulse
+
+the actual Goertzel is implentd here firmware/src/goertzel.c
+
+It is implemented in float and in fixpoint. The float implemantation shows how it works in a clean mathematic way to understand the Goertzel, while the fixpoint implementaion is hand-optimized for better performance.
+
+All Source codes are in plain C and should run on every 32 bit machine with GCC style compiler.  
+
+whith the followingf macro the float implementaion would be used, but this would overlaod the realtime conditions by approx. factor 6. So this can only be used in STREAM_DATA mode. 
+//#define USE_FLOAT_GOERTZEL
+
+If you don#t trust the ADC values for any reason or to check the Signal processing, you can use an artificial signal from an internal wavetable:
+
+//#define USE_ARTIFICIAL_SIGNAL
+
+Whith the following macro you can choose the threshhold at what level a frequency is detected:
+
+#define SIGNAL_SCALE_THRESHOLD 1.4
 
 
 ## Downloading and building the application
