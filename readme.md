@@ -7,13 +7,15 @@ has_toc: false
 
 [![MCHP](https://www.microchip.com/ResourcePackages/Microchip/assets/dist/images/logo.png)](https://www.microchip.com)
 
-# ADC DMA sleepwalking
+# ADC DMA Double Buffering and Singnal Processing
 
-This application shows how to configure the ADC in a sleepwalking operation, where the input voltage is measured at a fixed interval, and then the device is woken from sleep after conversion of 16 samples.
+This application shows how to use the TC3/ADC/DMA to collect 2*512 samples (Ping-Pong Buffer) at a samplerate of 50kHz. While one buffer is filled with data, the other buffer can be used to work safely with the data. 
 
 ## Description
 
-This example application shows how to use the ADC peripheral library to perform sleepwalking and how the DMA wakes up the device after conversion of N samples. ADC conversion is triggered by RTC compare 0 event. On every trigger, input voltage is converted and the result is copied to an array in SRAM by the DMA channel. All these peripherals are operated while the CPU is in sleep. DMA generates interrupt after it transfers 16 results into the array in SRAM, which wakes the CPU.
+While the TC3/ADC/DMA is collecting one buffer with 512 samples, in the other buffer a Goertzel Algorithm is used to detect a 10kHz frequency. Further processing is used to detect pulses of 10kHz. This pulses are count and once per second the result is print onto the terminal. 
+
+![Alt-Text](Counter.png)
 
 ## Downloading and building the application
 
