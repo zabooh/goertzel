@@ -14,8 +14,7 @@ In this case a Frequency pulse detection is done with a Goertzel algorithm.
 
 While one board is producing the pulse (you can use the project https://github.com/zabooh/waveform_generator.git to generated the pulse) The other booard is analysing the samples.
 
-![Alt-Text](Setup.png)
-
+<img src="Setup.png" alt="Alternativtext" width="300" height="300">
 
 ## Description
 
