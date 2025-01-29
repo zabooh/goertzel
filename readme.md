@@ -9,12 +9,17 @@ has_toc: false
 
 # ADC DMA Double Buffering and Signal Processing
 
-This application shows how to use the TC3/ADC/DMA to collect 2*512 samples (Ping-Pong Buffer) at a samplerate of 50kHz. While one buffer is filled with data, the other buffer can be used to work safely with the data. 
+This application shows how to use the TC3/ADC/DMA to collect 2*512 samples (Ping-Pong Buffer) at a samplerate of 50kHz. While one buffer is filled with data, the other buffer is used to work safely with the data. This is an example of a continuesly digital signal processing. 
+
 In this case a Frequency pulse detection is done with a Goertzel algorithm. 
 
 While one board is producing the pulse (you can use the project https://github.com/zabooh/waveform_generator.git to generated the pulse) The other booard is analysing the samples.
 
 <img src="Setup.png" alt="Alternativtext" width="300" height="300">
+
+[SAM D21 Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro)  and a 
+[SAMC21N Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamc21n-xpro) 
+
 
 ## Description
 
@@ -72,20 +77,6 @@ The  DAMPING_FACTOR  allows to let the Goertzel output go down by otself, otherw
     #define WINDOW_SIZE             1    // Window size for resetting accumulators
 
 
-## Downloading and building the application
-
-To clone or download this application from Github, go to the [main page of this repository](https://github.com/Microchip-MPLAB-Harmony/csp_apps_sam_d21_da1) and then click **Clone** button to clone this repository or download as zip file.
-This content can also be downloaded using content manager by following these [instructions](https://github.com/Microchip-MPLAB-Harmony/contentmanager/wiki).
-
-Path of the application within the repository is **apps/adc/adc_dmac_sleepwalking/firmware** .
-
-To build the application, refer to the following table and open the project using its IDE.
-
-| Project Name      | Description                                    |
-| ----------------- | ---------------------------------------------- |
-| sam_d21_xpro.X | MPLABX project for [SAM D21 Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro) |
-| sam_da1_xpro.X | MPLABX project for [SAM DA1 Xplained Pro Evaluation Kit](https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO) |
-|||
 
 ## Setting up the hardware
 
