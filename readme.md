@@ -17,6 +17,19 @@ While the TC3/ADC/DMA is collecting one buffer with 512 samples, in the other bu
 
 ![Alt-Text](Counter.png)
 
+when the macro STREAM_DATA in main.c is defined by deleting the // 
+//#define STREAM_DATA   
+the last two buffers of 512 samples and the Goertzel Result is streamed to the Terminal in ASCII.  
+
+![Alt-Text](StreamData.png)
+
+
+This data can be received by the Pyhton Script disp_adc.py to visualize the data in the buffer. keep in mind, that this is not continuesly,the sampling at 50kHz into 2*512 Samples achieves a total sample time of 20.48 milli seconds. Then the sampling is paused and the data is streamed to the Terminal. When streaming is ready, it restarts the sampling. 
+
+![Alt-Text](StreamVisualization.png)
+
+
+
 ## Downloading and building the application
 
 To clone or download this application from Github, go to the [main page of this repository](https://github.com/Microchip-MPLAB-Harmony/csp_apps_sam_d21_da1) and then click **Clone** button to clone this repository or download as zip file.
