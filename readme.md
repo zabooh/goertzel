@@ -19,7 +19,7 @@ While the TC3/ADC/DMA is collecting one buffer with 512 samples, in the other bu
 
 when the macro STREAM_DATA in __main.c__ is defined by deleting the // 
 
-//#define STREAM_DATA   
+    //#define STREAM_DATA   
 
 the last two buffers of 512 samples and the Goertzel Result is streamed to the Terminal in ASCII.  
 
@@ -42,16 +42,31 @@ It is implemented in float and in fixpoint. The float implemantation shows how i
 
 All Source codes are in plain C and should run on every 32 bit machine with GCC style compiler.  
 
-whith the followingf macro the float implementaion would be used, but this would overlaod the realtime conditions by approx. factor 6. So this can only be used in STREAM_DATA mode. 
-//#define USE_FLOAT_GOERTZEL
+whith the following macro the float implementaion would be used, but this would overlaod the realtime conditions by approx. factor 6. So this can only be used in STREAM_DATA mode. 
+    
+    //#define USE_FLOAT_GOERTZEL
 
 If you don#t trust the ADC values for any reason or to check the Signal processing, you can use an artificial signal from an internal wavetable:
 
-//#define USE_ARTIFICIAL_SIGNAL
+    //#define USE_ARTIFICIAL_SIGNAL
 
 Whith the following macro you can choose the threshhold at what level a frequency is detected:
 
-#define SIGNAL_SCALE_THRESHOLD 1.4
+    #define SIGNAL_SCALE_THRESHOLD 1.4
+
+
+in __firmware/src/goertzel.h__ you'll find some parameters. The most interesting one is FREQUENCY. It defines the "resonance" frequency of the goertzel. 
+The function Goertzel_i_Init() allows to calcute the coefficienst during runtime. This allow to reconfigre the Goertzel all the time. 
+
+The  DAMPING_FACTOR  allows to let the Goertzel output go down by otself, otherwise it would accumulate the result allways up.
+
+    // Define constants 
+    #define BLOCK_SIZE            512    // Size of the data block to process
+    #define SAMPLERATE          50000    // Sampling rate in Hz
+    #define FREQUENCY           10000    // Target frequency to detect
+    #define GOERTZEL_THRESHOLD   2000    // start threshold for detection
+    #define DAMPING_FACTOR      0.995    // Damping factor to prevent overflow
+    #define WINDOW_SIZE             1    // Window size for resetting accumulators
 
 
 ## Downloading and building the application
