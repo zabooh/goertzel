@@ -7,7 +7,7 @@ has_toc: false
 
 [![MCHP](https://www.microchip.com/ResourcePackages/Microchip/assets/dist/images/logo.png)](https://www.microchip.com)
 
-# ADC DMA Double Buffering and Singnal Processing
+# ADC DMA Double Buffering and Signal Processing
 
 This application shows how to use the TC3/ADC/DMA to collect 2*512 samples (Ping-Pong Buffer) at a samplerate of 50kHz. While one buffer is filled with data, the other buffer can be used to work safely with the data. 
 
