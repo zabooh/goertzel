@@ -24,10 +24,15 @@ the last two buffers of 512 samples and the Goertzel Result is streamed to the T
 ![Alt-Text](StreamData.png)
 
 
-This data can be received by the Pyhton Script disp_adc.py to visualize the data in the buffer. keep in mind, that this is not continuesly,the sampling at 50kHz into 2*512 Samples achieves a total sample time of 20.48 milli seconds. Then the sampling is paused and the data is streamed to the Terminal. When streaming is ready, it restarts the sampling. 
+This data can be received by the Pyhton Script __disp_adc.py__ to visualize the data in the buffer. keep in mind, that this is not continuesly,the sampling at 50kHz into 2*512 Samples achieves a total sample time of 20.48 milli seconds. Then the sampling is paused and the data is streamed to the Terminal. When streaming is ready, it restarts the sampling. 
+
+The blue line is the actual sampled data. this data is put into a Goertzel Algorithm and then the output is out into a simple low pass filter. This is then the red line. 
+when the output of the low pass does reached a certain value, the internal values of the Goertzel are reset and this event is counted as a "pulse detection"
 
 ![Alt-Text](StreamVisualization.png)
 
+
+You can use the project https://github.com/zabooh/waveform_generator.git to generated the pulse
 
 
 ## Downloading and building the application
