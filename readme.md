@@ -12,9 +12,10 @@ has_toc: false
 This application shows how to use the TC3/ADC/DMA to collect 2*512 samples (Ping-Pong Buffer) at a samplerate of 50kHz. While one buffer is filled with data, the other buffer can be used to work safely with the data. 
 In this case a Frequency pulse detection is done with a Goertzel algorithm. 
 
+While one board is producing the pulse (you can use the project https://github.com/zabooh/waveform_generator.git to generated the pulse) The other booard is analysing the samples.
+
 ![Alt-Text](Setup.png)
 
-You can use the project https://github.com/zabooh/waveform_generator.git to generated the pulse. Running on the second board. 
 
 ## Description
 
