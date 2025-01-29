@@ -192,16 +192,36 @@ uint32_t uiFLT_IIR1_Lowpass(uint32_t uiFilter, uint32_t uiX) {
      *  This pole lies within the unit circle, which guarantees the stability of the filter.
      * 
      */
-#define SHIFT_VALUE_K   4
+#define LP_SHIFT_VALUE_K   4
 
     uint32_t ulsTap;
 
     ulsTap = uiIIR_Tap[uiFilter];
-    ulsTap = ulsTap - (ulsTap >> SHIFT_VALUE_K) + uiX;
+    ulsTap = ulsTap - (ulsTap >> LP_SHIFT_VALUE_K) + uiX;
     uiIIR_Tap[uiFilter] = ulsTap;
+    
     return (uint32_t) (ulsTap >> SHIFT_VALUE_K);
 
 }
+
+
+
+uint32_t uiFLT_IIR1_Highpass(uint32_t uiFilter, uint32_t uiX) {
+    static uint32_t uiIIR_Tap[N_FILTER];
+    uint32_t ulsTap, uiY;
+
+#define HP_SHIFT_VALUE_K 4
+    
+    ulsTap = uiIIR_Tap[uiFilter];
+    ulsTap = ulsTap - (ulsTap >> HP_SHIFT_VALUE_K) + uiX;
+    uiIIR_Tap[uiFilter] = ulsTap;
+
+    // Highpass Calculation
+    uiY = uiX - (ulsTap >> SHIFT_VALUE_K);
+
+    return uiY;
+}
+
 
 
 
