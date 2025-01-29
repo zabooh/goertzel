@@ -20,6 +20,11 @@ While one board is producing the pulse (you can use the project https://github.c
 [SAM D21 Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro)  and a 
 [SAMC21N Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamc21n-xpro) 
 
+SAM D21 Xplained Pro Evaluation Kit
+- Connect a voltage below the selected ADC reference voltage (VDDANA / 2) to pin 3 (PA02 - ADC_AIN0) of EXT3 connector
+
+SAMC21N Xplained Pro Evaluation Kit
+- use the DAC output pin (Don't forget ground :o)
 
 ## Description
 
@@ -77,47 +82,3 @@ The  DAMPING_FACTOR  allows to let the Goertzel output go down by otself, otherw
     #define WINDOW_SIZE             1    // Window size for resetting accumulators
 
 
-
-## Setting up the hardware
-
-The following table shows the target hardware for the application projects.
-
-| Project Name| Board|
-|:---------|:---------:|
-| sam_d21_xpro.X | [SAM D21 Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro)
-| sam_da1_xpro.X | [SAM DA1 Xplained Pro Evaluation Kit](https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO)
-|||
-
-### Setting up [SAM D21 Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro)
-
-- Connect a voltage below the selected ADC reference voltage (VDDANA / 2) to pin 3 (PA02 - ADC_AIN0) of EXT3 connector
-- Connect the Debug USB port on the board to the computer using a micro USB cable
-
-### Setting up [SAM DA1 Xplained Pro Evaluation Kit](https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO)
-
-- Connect a voltage below the selected ADC reference voltage (VDDANA / 2) to pin 3 (PA02 - ADC_AIN0) of EXT3 connector
-- Connect the Debug USB port on the board to the computer using a micro USB cable
-
-## Running the Application
-
-1. Open the Terminal application (Ex.:Tera term) on the computer
-2. Connect to the EDBG Virtual COM port and configure the serial settings as follows:
-    - Baud : 115200
-    - Data : 8 Bits
-    - Parity : None
-    - Stop : 1 Bit
-    - Flow Control : None
-3. Build and Program the application using its IDE
-4. CPU wakes up after every 16 transfers of ADC result and updates the console as shown below:
-
-    ![output](images/output_adc_dma_sleepwalking.png)
-
-5. Failure is indicated by turning ON the user LED (i.e. application failed if the LED is turned ON)
-
-Refer to the table below for details of LED:
-
-| Board| LED name|
-|------|---------|
-| [SAM D21 Xplained Pro Evaluation Kit](https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro) | LED0 |
-| [SAM DA1 Xplained Pro Evaluation Kit](https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO) | LED0 |
-|||
