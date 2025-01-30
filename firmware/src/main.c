@@ -99,8 +99,7 @@ int32_t beat_sum = 0;
 int32_t beat_average = 0;
 
 uint32_t myAppObj = 0;
-uint16_t adc_result_array_0[BLOCK_SIZE];
-uint16_t adc_result_array_1[BLOCK_SIZE];
+uint16_t adc_result_array[2][BLOCK_SIZE];
 
 int32_t output_data_0[BLOCK_SIZE];
 int32_t output_data_1[BLOCK_SIZE];
@@ -117,13 +116,13 @@ void DmacCh0Cb(DMAC_TRANSFER_EVENT returned_evnt, uintptr_t MyDmacContext) {
             buffer_current_n = 1;
             GPIO_PB16_Set();
             if (dma_on == 1) {
-                DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) adc_result_array_1, sizeof (adc_result_array_1));
+                DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) &adc_result_array[1][0], sizeof (adc_result_array)/2);
             }
         } else {
             buffer_current_n = 0;
             GPIO_PB16_Clear();
             if (dma_on == 1) {
-                DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) adc_result_array_0, sizeof (adc_result_array_0));
+                DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) &adc_result_array[0][0], sizeof (adc_result_array)/2);
             }
         }
     } else if (DMAC_TRANSFER_EVENT_ERROR == returned_evnt) {
@@ -154,7 +153,7 @@ int __attribute__((optimize("-O1"))) main(void) {
     DMAC_ChannelCallbackRegister(DMAC_CHANNEL_0, DmacCh0Cb, (uintptr_t) & myAppObj);
 
     buffer_current_n = 0;
-    DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) adc_result_array_0, sizeof (adc_result_array_0));
+    DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) &adc_result_array[0][0], sizeof (adc_result_array)/2);
 
     uint32_t uTC3_TimerFrequency = TC3_TimerFrequencyGet();
     float fTC3_TimerFrequency = (float) uTC3_TimerFrequency;
@@ -261,14 +260,14 @@ int __attribute__((optimize("-O1"))) main(void) {
 #ifdef USE_FLOAT_GOERTZEL
                 Goertzel_f_Filter(adc_result_array_0, output_data_0, &goertzel_float_coeff);
 #else
-                Goertzel_i_Filter(adc_result_array_0, output_data_0, &goertzel_integer_coeff);
+                Goertzel_i_Filter(&adc_result_array[0][0], output_data_0, &goertzel_integer_coeff);
 #endif                           
                 GPIO_PB17_Clear();
                 GPIO_PB17_Set();
 #ifdef USE_FLOAT_GOERTZEL
                 Goertzel_f_Filter(adc_result_array_1, output_data_1, &goertzel_float_coeff);
 #else
-                Goertzel_i_Filter(adc_result_array_1, output_data_1, &goertzel_integer_coeff);
+                Goertzel_i_Filter(&adc_result_array[1][0], output_data_1, &goertzel_integer_coeff);
 #endif  
                 GPIO_PB17_Clear();
 
@@ -276,14 +275,14 @@ int __attribute__((optimize("-O1"))) main(void) {
                     uint16_t sample;
                     printf("\r\nTransferred X results to array in SRAM\r\n");
                     for (sample = 0; sample < BLOCK_SIZE; sample++) {
-                        adc_value = adc_result_array_0[sample];
+                        adc_value = adc_result_array[0][sample];
                         input_voltage = (float) adc_value * ADC_VREF / 4095U;
                         printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample,              (int) adc_value, input_voltage, (int) output_data_0[sample]);
                         SYSTICK_DelayMs(7);
                     }
                     ix = 0;
                     for (sample = 0; sample < BLOCK_SIZE; sample++) {
-                        adc_value = adc_result_array_1[ix++];
+                        adc_value = adc_result_array[1][ix++];
                         input_voltage = (float) adc_value * ADC_VREF / 4095U;
                         printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample + BLOCK_SIZE, (int) adc_value, input_voltage, (int) output_data_1[sample]);
                         SYSTICK_DelayMs(7);
@@ -291,7 +290,7 @@ int __attribute__((optimize("-O1"))) main(void) {
                 }                
                 buffer_current_n = 0;
                 dma_on = 1;
-                DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) adc_result_array_0, sizeof (adc_result_array_0));
+                DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) &adc_result_array[0][0], sizeof (adc_result_array)/2);
 
 #endif          
 
