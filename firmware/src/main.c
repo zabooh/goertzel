@@ -140,7 +140,7 @@ uint16_t adc_value;
 
 SYSTICK_TIMEOUT m_timeout;
 
-int __attribute__((optimize("-O0"))) main(void) {
+int __attribute__((optimize("-O1"))) main(void) {
     /* Initialize all modules */
     SYS_Initialize(NULL);
 
@@ -278,7 +278,7 @@ int __attribute__((optimize("-O0"))) main(void) {
                     for (sample = 0; sample < BLOCK_SIZE; sample++) {
                         adc_value = adc_result_array_0[sample];
                         input_voltage = (float) adc_value * ADC_VREF / 4095U;
-                        printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample, (int) adc_value, input_voltage, (int) output_data_0[sample]);
+                        printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample,              (int) adc_value, input_voltage, (int) output_data_0[sample]);
                     }
                     ix = 0;
                     for (sample = 0; sample < BLOCK_SIZE; sample++) {

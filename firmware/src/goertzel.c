@@ -4,7 +4,7 @@
 
 
 
-uint32_t uiIIR_Tap[N_FILTER];
+int32_t iIIR_Tap[N_FILTER];
 
 /*
  *  Initialize integer-based Goertzel filter
@@ -71,7 +71,7 @@ void __attribute__((optimize("-O1"))) Goertzel_i_Filter(uint16_t *data_input, in
         int32_t magnitude = abs_real + abs_imag - ((abs_real < abs_imag ? abs_real : abs_imag) >> 1);
 
         // Convert back and store result
-        int32_t temp3 = uiFLT_IIR1_Lowpass(0,magnitude >> FIXED_POINT_BITS);
+        int32_t temp3 = iFLT_IIR1_Lowpass(0,magnitude >> FIXED_POINT_BITS);
         data_output[i] = temp3;
 
         // Periodic reset of accumulators
@@ -121,7 +121,7 @@ void __attribute__((optimize("-O1"))) Goertzel_f_Filter(uint16_t *data_input, in
 
     for (int i = 0; i < BLOCK_SIZE; i++) {
         // Convert ADC value to float and reduce is by factor 4
-        data_sample = ((int32_t) (data_input[i]) >> 2);
+        data_sample = ((int32_t) (data_input[i]) >> 2);        
         float sample = (float) data_sample;
 
         // Goertzel iteration
@@ -137,7 +137,7 @@ void __attribute__((optimize("-O1"))) Goertzel_f_Filter(uint16_t *data_input, in
         uint32_t magnitude = fabsf(real) + fabsf(imag) - fminf(fabsf(real), fabsf(imag)) / 2.0f;
 
         // Store result
-        magnitude = uiFLT_IIR1_Lowpass(0,magnitude >> FIXED_POINT_BITS);
+        magnitude = iFLT_IIR1_Lowpass(0,magnitude >> FIXED_POINT_BITS);
         data_output[i] = (uint32_t) magnitude;
 
         // Periodic reset of accumulators
@@ -159,14 +159,14 @@ void __attribute__((optimize("-O1"))) Goertzel_f_Filter(uint16_t *data_input, in
  */
 void FLT_vIIR_Init(void) {
     for (int ix = 0; ix < N_FILTER; ix++) {
-        uiIIR_Tap[ix] = 0;
+        iIIR_Tap[ix] = 0;
     }
 }
 
 /*
  * IIR Lowpass with one Pol 
  */
-uint32_t uiFLT_IIR1_Lowpass(uint32_t uiFilter, uint32_t uiX) {
+int32_t __attribute__((optimize("-O1"))) iFLT_IIR1_Lowpass(int32_t Filter, int32_t iX) {
     /*
      * NORMALIZED BANDWIDTH AND
      * RISE TIME FOR VARIOUS VALUES OF k
@@ -174,8 +174,8 @@ uint32_t uiFLT_IIR1_Lowpass(uint32_t uiFilter, uint32_t uiX) {
      *      (normalized        (samples)
      *      to 1 Hz)
      * ========================================
-     *  1   0.1197              Three
-     *  2   0.0466              Eight
+     *  1   0.1197              3
+     *  2   0.0466              8
      *  3   0.0217              16
      *  4   0.0104              34
      *  5   0.0051              69
@@ -191,35 +191,46 @@ uint32_t uiFLT_IIR1_Lowpass(uint32_t uiFilter, uint32_t uiX) {
      * 
      *  This pole lies within the unit circle, which guarantees the stability of the filter.
      * 
+     * This filter is good for smoothing noisy data
+     * 
      */
 #define LP_SHIFT_VALUE_K   4
 
-    uint32_t ulsTap;
+    int32_t iTap;
 
-    ulsTap = uiIIR_Tap[uiFilter];
-    ulsTap = ulsTap - (ulsTap >> LP_SHIFT_VALUE_K) + uiX;
-    uiIIR_Tap[uiFilter] = ulsTap;
+    iTap = iIIR_Tap[Filter];
+    iTap = iTap - (iTap >> LP_SHIFT_VALUE_K) + iX;
+    iIIR_Tap[Filter] = iTap;
     
-    return (uint32_t) (ulsTap >> SHIFT_VALUE_K);
+    return (iTap >> LP_SHIFT_VALUE_K);
 
 }
 
 
-
-uint32_t uiFLT_IIR1_Highpass(uint32_t uiFilter, uint32_t uiX) {
-    static uint32_t uiIIR_Tap[N_FILTER];
-    uint32_t ulsTap, uiY;
+int32_t __attribute__((optimize("-O1"))) iFLT_IIR1_Highpass(int32_t Filter, int32_t iX) {
+    int32_t iTap; 
+    int32_t iY;
+    
+    /*
+     *  one Zero at 1. This surpresses the DC
+     *  with higher K, the bandwidth is reduced towards higher frequencies
+     * 
+     *               1 - z^-1
+     *  H(z) = -----------------------
+     *         1 - ( 1 - 2^-K ) * z^-1  
+     * 
+     */
 
 #define HP_SHIFT_VALUE_K 4
     
-    ulsTap = uiIIR_Tap[uiFilter];
-    ulsTap = ulsTap - (ulsTap >> HP_SHIFT_VALUE_K) + uiX;
-    uiIIR_Tap[uiFilter] = ulsTap;
+    iTap = iIIR_Tap[Filter];
+    iTap = iTap - (iTap >> HP_SHIFT_VALUE_K) + iX;
+    iIIR_Tap[Filter] = iTap;
 
     // Highpass Calculation
-    uiY = uiX - (ulsTap >> SHIFT_VALUE_K);
-
-    return uiY;
+    iY = iX - (iTap >> HP_SHIFT_VALUE_K);
+    
+    return (iY);
 }
 
 

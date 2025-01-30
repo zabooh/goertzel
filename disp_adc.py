@@ -58,14 +58,15 @@ def update_plot(frame):
             for line in lines:   
                 #match = re.search(r'ADC Count \[(\d+)\] = 0x[0-9a-fA-F]+, ADC Input Voltage = (\d+\.\d+) V', line)
                 #match = re.search(r'ADC Count \[(\d+)\] = (\d+), ADC Input Voltage = (\d+\.\d+) V', line)
-                match = re.search(r'ADC Count \[(\d+)\] = (\d+), ADC Input Voltage = (\d+\.\d+) V Goertzel = (\d+)', line)
+                match = re.search(r'ADC Count \[(-?\d+)\] = (-?\d+), ADC Input Voltage = (-?\d+\.-?\d+) V Goertzel = (-?\d+)', line)
                 
                 if match:
                     sample_num = int(match.group(1))
                     raw_value =  int(match.group(2))
                     voltage = float(match.group(3))
                     goertzel = float(match.group(4)) 
-                                        
+                    
+
                     # Überprüfen Sie, ob sample_num innerhalb des gültigen Bereichs liegt
                     if 0 <= sample_num < transfer_size:
                         voltages[sample_num] = voltage
@@ -75,16 +76,16 @@ def update_plot(frame):
                                                                                 
                     voltages[sample_num] = voltage
                     goertzels[sample_num] = goertzel/2048
-                    # print(f"{sample_num} : {raw_value}")
+                    # print(f"{match} : {sample_num} : {raw_value}")
                     
                     #plot_line.set_ydata(voltages)
                     #ax1.set_ylim(0, max(voltages) + 0.1) 
                     ax1.relim() 
                     ax1.autoscale_view() 
 
-                    #print(f"{voltages}")
-                    plot_line.set_ydata(voltages)
-                    goertzel_line.set_ydata(goertzels)
+            #print(f"{voltages}")
+            plot_line.set_ydata(voltages)
+            goertzel_line.set_ydata(goertzels)
 
             # Berechne FFT
             hanning_window = np.hanning(len(voltages))

@@ -45,8 +45,9 @@ void Goertzel_f_Init(float samplerate, float frequency, GOERTZEL_f_COEFF *coeff)
 void Goertzel_f_Filter(uint16_t *data_input, int32_t *data_output, GOERTZEL_f_COEFF *coeff);
 
 
-uint32_t uiFLT_IIR1_Lowpass(uint32_t filter, uint32_t x);
 void FLT_vIIR_Init(void);
+int32_t iFLT_IIR1_Lowpass(int32_t Filter, int32_t x);
+int32_t iFLT_IIR1_Highpass(int32_t Filter, int32_t iX) ;
 
-#define N_FILTER 1
+#define N_FILTER 2
 
