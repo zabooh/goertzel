@@ -62,6 +62,7 @@ void NonMaskableInt_Handler (void);
 void HardFault_Handler (void);
 void SysTick_Handler (void);
 void DMAC_InterruptHandler (void);
+void SERCOM3_USART_InterruptHandler (void);
 void TC3_TimerInterruptHandler (void);
 
 

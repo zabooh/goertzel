@@ -60,7 +60,7 @@
  *   to a post processing tool on the PC for data visualization. 
  *   Attention: No continues realtime! 
  */
-//#define STREAM_DATA   
+#define STREAM_DATA   
 
 /* USE_FLOAT_GOERTZEL allows to use the float implementation of the Goertzel Algorithm
  * Attention: No continues realtime! 
@@ -279,14 +279,16 @@ int __attribute__((optimize("-O1"))) main(void) {
                         adc_value = adc_result_array_0[sample];
                         input_voltage = (float) adc_value * ADC_VREF / 4095U;
                         printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample,              (int) adc_value, input_voltage, (int) output_data_0[sample]);
+                        SYSTICK_DelayMs(7);
                     }
                     ix = 0;
                     for (sample = 0; sample < BLOCK_SIZE; sample++) {
                         adc_value = adc_result_array_1[ix++];
                         input_voltage = (float) adc_value * ADC_VREF / 4095U;
                         printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample + BLOCK_SIZE, (int) adc_value, input_voltage, (int) output_data_1[sample]);
+                        SYSTICK_DelayMs(7);
                     }
-                }
+                }                
                 buffer_current_n = 0;
                 dma_on = 1;
                 DMAC_ChannelTransfer(DMAC_CHANNEL_0, (const void *) &ADC_REGS->ADC_RESULT, (const void *) adc_result_array_0, sizeof (adc_result_array_0));
