@@ -72,7 +72,7 @@
  * to check and compare the signal processing with an "perfect" signal
  * Can be used for Realtime
  */
-#define USE_ARTIFICIAL_SIGNAL
+//#define USE_ARTIFICIAL_SIGNAL
 
 /* SIGNAL_SCALE_THRESHOLD set the threshold for the Frequency detection
  */
@@ -223,7 +223,7 @@ int __attribute__((optimize("-O0"))) main(void) {
 
 #ifdef USE_ARTIFICIAL_SIGNAL                
                 for (int ix = 0; ix < BLOCK_SIZE; ix++) {
-                    adc_result_array_1[ix] = (sine_wave[sine_wave_table_index++] << WAVE_TABLE_AMPLITUDE_SHIFT) + 512;
+                    adc_result_array[1][ix] = (sine_wave[sine_wave_table_index++] << WAVE_TABLE_AMPLITUDE_SHIFT) + 512;
                     if (sine_wave_table_index >= NUM_OF_SAMPLES) sine_wave_table_index = 0;
                 }
 #endif                
@@ -235,7 +235,7 @@ int __attribute__((optimize("-O0"))) main(void) {
                 GPIO_PB17_Set();
 #ifdef USE_ARTIFICIAL_SIGNAL                
                 for (int ix = 0; ix < BLOCK_SIZE; ix++) {
-                    adc_result_array_0[ix] = (sine_wave[sine_wave_table_index++] << WAVE_TABLE_AMPLITUDE_SHIFT) + 512;
+                    adc_result_array[0][ix] = (sine_wave[sine_wave_table_index++] << WAVE_TABLE_AMPLITUDE_SHIFT) + 512;
                     if (sine_wave_table_index >= NUM_OF_SAMPLES) sine_wave_table_index = 0;
                 }
 #endif
@@ -274,14 +274,20 @@ int __attribute__((optimize("-O0"))) main(void) {
                 
                 GPIO_PB17_Set();
                 int32_t *ptr;
-               
+//                
+//                uint16_t *ptru16 = (uint16_t *)adc_result_array;                                
+//                for(int ix=0;ix<1024;ix++){
+//                    *ptru16 = iFLT_IIR1_Lowpass(1,(int32_t) *ptru16);
+//                    ptru16++;
+//                }
+                        
                 // measured 224 milli seconds with float
                 // measured  60 milli seconds with fixpoint
-               
-                ptr =  FFT_32BitInplace((uint16_t *)adc_result_array, 1024);
+
+                ptr =  FFT_32BitInplace((uint16_t *)adc_result_array, FFT_LENGTH);
                 GPIO_PB17_Clear();
-                for(int ix=0;ix<512;ix++)output_data_0[ix] = (*ptr++)*20;
-                //for(int ix=0;ix<512;ix++)output_data_0[ix] = iFLT_IIR1_Lowpass(0,(*ptr++)*20);
+                //for(int ix=0;ix<(FFT_LENGTH/2);ix++)output_data_0[ix] = (*ptr++)*20;
+                for(int ix=0;ix<(FFT_LENGTH/2);ix++)output_data_0[ix] = iFLT_IIR1_Lowpass(0,(*ptr++)*20);
 #endif  
                 GPIO_PB17_Clear();
 
