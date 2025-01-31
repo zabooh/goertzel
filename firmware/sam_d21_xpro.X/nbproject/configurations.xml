@@ -236,6 +236,8 @@
       <itemPath>../src/config/sam_d21_xpro/pin_configurations.csv</itemPath>
       <itemPath>../src/goertzel.c</itemPath>
       <itemPath>../src/goertzel.h</itemPath>
+      <itemPath>../src/fft_32BitInplace.c</itemPath>
+      <itemPath>../src/fft_32BitInplace.h</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
