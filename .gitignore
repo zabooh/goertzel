@@ -1,0 +1,80 @@
+# Objektdateien und Binärdateien
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker-Ausgabedateien
+*.map
+*.exp
+
+# Bibliotheken
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Ausführbare Dateien
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug-Dateien
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# IDE-spezifische Dateien (z.B. für Eclipse oder Visual Studio Code)
+.cproject
+.project
+.settings/
+.vscode/
+private/
+
+# Build-Verzeichnisse
+build/
+debug/
+release/
+.generated_files/
+
+# Backup-Dateien
+*~
+*.bak
+*.swp
+
+# Spezifische Mikrocontroller-Dateien
+*.lst
+*.sym
+
+# Konfigurationsdateien
+*.cfg
+*.conf
+
+# Logdateien
+*.log
+
+# Temporäre Dateien
+*.tmp
+
+*.mk
+*.properties
+
