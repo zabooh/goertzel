@@ -73,7 +73,7 @@ void __attribute__((optimize("-O1"))) Goertzel_i_Filter(uint16_t *data_input, in
         // Convert back and store result
         int32_t temp3 = iFLT_IIR1_Lowpass(0,magnitude >> FIXED_POINT_BITS);
         data_output[i] = temp3;
-
+        
         // Periodic reset of accumulators
         if (down_counter++ == WINDOW_SIZE) {
             down_counter = 0;
@@ -137,7 +137,7 @@ void __attribute__((optimize("-O1"))) Goertzel_f_Filter(uint16_t *data_input, in
         uint32_t magnitude = fabsf(real) + fabsf(imag) - fminf(fabsf(real), fabsf(imag)) / 2.0f;
 
         // Store result
-        magnitude = iFLT_IIR1_Lowpass(0,magnitude >> FIXED_POINT_BITS);
+//        magnitude = iFLT_IIR1_Lowpass(0,magnitude >> FIXED_POINT_BITS);
         data_output[i] = (uint32_t) magnitude;
 
         // Periodic reset of accumulators

@@ -49,5 +49,5 @@ void FLT_vIIR_Init(void);
 int32_t iFLT_IIR1_Lowpass(int32_t Filter, int32_t x);
 int32_t iFLT_IIR1_Highpass(int32_t Filter, int32_t iX) ;
 
-#define N_FILTER 3
+#define N_FILTER 4
 

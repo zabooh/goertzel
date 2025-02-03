@@ -47,6 +47,7 @@ typedef struct {
 
 uint32_t FFT_32BitInplace_GetLength(void);
 int32_t * FFT_32BitInplace(uint16_t *Sample, uint32_t n_data);
+int32_t * FFT_32BitInplace32(int32_t *Sample, uint32_t n_data);
 void FFT_32BitInplace_Calculate(void);
 int32_t FTT_GetSampleData(uint32_t Index);
 

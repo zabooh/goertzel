@@ -55,6 +55,7 @@
 
 #include "plib_tc3.h"
 #include "interrupts.h"
+#include "peripheral/port/plib_port.h"
 
 
 // *****************************************************************************
@@ -94,8 +95,8 @@ void TC3_TimerInitialize( void )
      *  239 = ((clk / 2) / tf) - 1 =  ((48e6 / 2) / 100e3) - 1 
      *  191 = ((clk / 2) / tf) - 1 =  ((48e6 / 2) / 125e3) - 1 
      *  159 = ((clk / 2) / tf) - 1 =  ((48e6 / 2) / 150e3) - 1 
-     */    
-    TC3_REGS->COUNT16.TC_CC[0U] = 479U; // 50kHz
+     */
+    TC3_REGS->COUNT16.TC_CC[0U] = 479U; // 50kHz    
     //TC3_REGS->COUNT16.TC_CC[0U] = 319U; // 75kHz
     //TC3_REGS->COUNT16.TC_CC[0U] = 239U; // 100kHz
     //TC3_REGS->COUNT16.TC_CC[0U] = 191U; // 125kHz
@@ -213,6 +214,7 @@ void TC3_TimerCallbackRegister( TC_TIMER_CALLBACK callback, uintptr_t context )
 void __attribute__((used)) TC3_TimerInterruptHandler( void )
 {
     TC_TIMER_STATUS status;
+    GPIO_PB17_Toggle();
     status = (TC_TIMER_STATUS) (TC3_REGS->COUNT16.TC_INTFLAG);
     /* Clear interrupt flags */
     TC3_REGS->COUNT16.TC_INTFLAG = TC_INTFLAG_Msk;

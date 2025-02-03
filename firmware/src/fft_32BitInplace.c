@@ -213,6 +213,39 @@ int32_t * FFT_32BitInplace(uint16_t *Sample, uint32_t n_data) {
     return &fftData.result[0];
 }
 
+int32_t * FFT_32BitInplace32(int32_t *Sample, uint32_t n_data) {
+    
+    for (int ix = 0; ix < n_data; ix++) {
+        fftData.complex[ix].x = 0;
+        fftData.complex[ix].y = Sample[ix];
+    }
+    
+    FFT_fft(FFT_LENGTH, fftData.complex);
+    
+#ifdef __USE_FLOAT    
+    for (int ix = 0; ix < SIZE_OF_RESULT; ix++) {
+        fftData.result[ix] = 20 * log10(sqrt(pow((float) fftData.complex[ix].x, 2) + pow((float) fftData.complex[ix].y, 2)));    
+        
+    }
+#else
+    for (int ix = 0; ix < SIZE_OF_RESULT; ix++) {
+        FFT_NU_TYPE magnitude = alpha_max_plus_beta_min(fftData.complex[ix].x, fftData.complex[ix].y);
+
+        FFT_NU_TYPE log_approx = 0;
+        while (magnitude > 1) {                       
+            magnitude >>= 1;
+            log_approx += 6; // Approximation von 20*log10(2)
+        }
+
+        fftData.result[ix] = log_approx;
+    }
+      
+#endif
+    
+  
+    return &fftData.result[0];
+}
+
 uint32_t FFT_32BitInplace_GetLength(void) {
     return FFT_LENGTH;
 }

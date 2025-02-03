@@ -57,6 +57,13 @@
 #include "fft_32BitInplace.h"
 
 
+
+/*  Clocking: 
+ *    DFLL : SYSCTRL_DFLLVAL_FINE(600U) : 48MHz
+ *    DFLL -> GCLK0 -> TC3 -> ADC -> DMA
+ */
+
+
 /*  STREAM_DATA allows to send 2*512 Samples and Goertzel Results by UART
  *   to a post processing tool on the PC for data visualization. 
  *   Attention: No continues realtime! 
@@ -102,6 +109,9 @@ int32_t beat_average = 0;
 uint32_t myAppObj = 0;
 uint16_t adc_result_array[2][BLOCK_SIZE];
 
+int32_t adc_result_array32[2][BLOCK_SIZE];
+
+
 int32_t output_data_0[BLOCK_SIZE];
 int32_t output_data_1[BLOCK_SIZE];
 
@@ -135,21 +145,21 @@ void DmacCh0Cb(DMAC_TRANSFER_EVENT returned_evnt, uintptr_t MyDmacContext) {
 // *****************************************************************************
 // *****************************************************************************
 
-uint16_t adc_value;
+int32_t adc_value;
 
 SYSTICK_TIMEOUT m_timeout;
 
 int __attribute__((optimize("-O0"))) main(void) {
     /* Initialize all modules */
     SYS_Initialize(NULL);
-    
+
     ADC_Enable();
 
     RTC_Timer32Start();
     RTC_Timer32CompareSet(RTC_COMPARE_VAL);
 
     SYSTICK_TimerStart();
-    
+
     DMAC_ChannelCallbackRegister(DMAC_CHANNEL_0, DmacCh0Cb, (uintptr_t) & myAppObj);
 
     buffer_current_n = 0;
@@ -162,8 +172,8 @@ int __attribute__((optimize("-O0"))) main(void) {
     float fSampleRate = 1.0 / ((fTC3_Timer16bitPeriod + 1.0)* (1.0 / fTC3_TimerFrequency));
     uint32_t uSampleRate = (uint32_t) fSampleRate;
 
-//    Test_FFT(uSampleRate);
-    
+    //    Test_FFT(uSampleRate);
+
 
 #ifdef USE_FLOAT_GOERTZEL
     Goertzel_f_Init(SAMPLERATE, FREQUENCY, &goertzel_float_coeff);
@@ -188,7 +198,7 @@ int __attribute__((optimize("-O0"))) main(void) {
     TC3_TimerStart();
     SYSTICK_StartTimeOut(&m_timeout, 1000);
 
-    
+
     while (true) {
 
 
@@ -219,7 +229,7 @@ int __attribute__((optimize("-O0"))) main(void) {
 
             if (buffer_current_n == 0) {
 #ifndef STREAM_DATA                    
-                GPIO_PB17_Set();
+                // GPIO_PB17_Set();
 
 #ifdef USE_ARTIFICIAL_SIGNAL                
                 for (int ix = 0; ix < BLOCK_SIZE; ix++) {
@@ -228,11 +238,11 @@ int __attribute__((optimize("-O0"))) main(void) {
                 }
 #endif                
                 Goertzel_i_Filter(&adc_result_array[1][0], output_data_1, &goertzel_integer_coeff);
-                GPIO_PB17_Clear();
+                // GPIO_PB17_Clear();
 #endif                
             } else {
 #ifndef STREAM_DATA                    
-                GPIO_PB17_Set();
+                // GPIO_PB17_Set();
 #ifdef USE_ARTIFICIAL_SIGNAL                
                 for (int ix = 0; ix < BLOCK_SIZE; ix++) {
                     adc_result_array[0][ix] = (sine_wave[sine_wave_table_index++] << WAVE_TABLE_AMPLITUDE_SHIFT) + 512;
@@ -240,7 +250,7 @@ int __attribute__((optimize("-O0"))) main(void) {
                 }
 #endif
                 Goertzel_i_Filter(&adc_result_array[0][0], output_data_0, &goertzel_integer_coeff);
-                GPIO_PB17_Clear();
+                // GPIO_PB17_Clear();
 #endif                
 
 #ifdef STREAM_DATA            
@@ -259,50 +269,62 @@ int __attribute__((optimize("-O0"))) main(void) {
                     if (sine_wave_table_index >= NUM_OF_SAMPLES) sine_wave_table_index = 0;
                 }
 #endif
-                GPIO_PB17_Set();
+                // GPIO_PB17_Set();
 #ifdef USE_FLOAT_GOERTZEL
                 Goertzel_f_Filter(adc_result_array_0, output_data_0, &goertzel_float_coeff);
 #else
-           //     Goertzel_i_Filter(&adc_result_array[0][0], output_data_0, &goertzel_integer_coeff);
+                //     Goertzel_i_Filter(&adc_result_array[0][0], output_data_0, &goertzel_integer_coeff);
 #endif                           
-                GPIO_PB17_Clear();
-                GPIO_PB17_Set();
+                // GPIO_PB17_Clear();
+                // GPIO_PB17_Set();
 #ifdef USE_FLOAT_GOERTZEL
                 Goertzel_f_Filter(adc_result_array_1, output_data_1, &goertzel_float_coeff);
 #else
-           //     Goertzel_i_Filter(&adc_result_array[1][0], output_data_1, &goertzel_integer_coeff);
+                //     Goertzel_i_Filter(&adc_result_array[1][0], output_data_1, &goertzel_integer_coeff);
+
+                // GPIO_PB17_Set();
                 
-                GPIO_PB17_Set();
-                int32_t *ptr;
-//                
-//                uint16_t *ptru16 = (uint16_t *)adc_result_array;                                
+
+                uint16_t *ptru16 = (uint16_t *)adc_result_array;                                
 //                for(int ix=0;ix<1024;ix++){
 //                    *ptru16 = iFLT_IIR1_Lowpass(1,(int32_t) *ptru16);
 //                    ptru16++;
 //                }
-                        
+
+                int32_t *ptri32;
+                                
+                ptri32 = (int32_t *)&adc_result_array32[0][0];                                
+                for(int ix=0;ix<1024;ix++){
+                     *ptri32++ = *ptru16++;
+                    // *ptri32++ = iFLT_IIR1_Lowpass( 3, (int32_t) *ptru16++);
+                    // *ptri32++ = iFLT_IIR1_Highpass( 3, (int32_t) *ptru16++);
+                    //   *ptri32++ = iFLT_IIR1_Lowpass( 3, iFLT_IIR1_Highpass(1,(int32_t) *ptru16++) )*4;
+                }
+                
                 // measured 224 milli seconds with float
                 // measured  60 milli seconds with fixpoint
-
-                ptr =  FFT_32BitInplace((uint16_t *)adc_result_array, FFT_LENGTH);
-                GPIO_PB17_Clear();
+                
+                //ptr = FFT_32BitInplace((uint16_t *) adc_result_array, FFT_LENGTH);
+                ptri32 = FFT_32BitInplace32((int32_t *) &adc_result_array32[0][0], FFT_LENGTH);
+                
+                // GPIO_PB17_Clear();
                 //for(int ix=0;ix<(FFT_LENGTH/2);ix++)output_data_0[ix] = (*ptr++)*20;
-                for(int ix=0;ix<(FFT_LENGTH/2);ix++)output_data_0[ix] = iFLT_IIR1_Lowpass(0,(*ptr++)*20);
+                for (int ix = 0; ix < (FFT_LENGTH / 2); ix++)output_data_0[ix] = iFLT_IIR1_Lowpass(0, (*ptri32++)*20);
 #endif  
-                GPIO_PB17_Clear();
+                // GPIO_PB17_Clear();
 
                 for (int ix = 0; ix < BLOCK_SIZE; ix++) {
                     uint16_t sample;
                     printf("\r\nTransferred X results to array in SRAM\r\n");
                     for (sample = 0; sample < BLOCK_SIZE; sample++) {
-                        adc_value = adc_result_array[0][sample];
+                        adc_value = adc_result_array32[0][sample];
                         input_voltage = (float) adc_value * ADC_VREF / 4095U;
                         printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample, (int) adc_value, input_voltage, (int) output_data_0[sample]);
                         SYSTICK_DelayMs(7);
                     }
                     ix = 0;
                     for (sample = 0; sample < BLOCK_SIZE; sample++) {
-                        adc_value = adc_result_array[1][ix++];
+                        adc_value = adc_result_array32[1][ix++];
                         input_voltage = (float) adc_value * ADC_VREF / 4095U;
                         printf("ADC Count [%d] = %04d, ADC Input Voltage = %f V Goertzel = %d\n", sample + BLOCK_SIZE, (int) adc_value, input_voltage, (int) output_data_1[sample]);
                         SYSTICK_DelayMs(7);
