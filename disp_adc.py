@@ -28,6 +28,9 @@ ax1.set_title('ADC Input Voltage')
 ax1.set_xlabel('Sample Number')
 ax1.set_ylabel('Voltage (V)')
 
+time_lines = np.arange(0, 1024, 20.48) 
+ax1.vlines(time_lines, -2, 1, linestyles='dashed', colors='gray', alpha=0.5)
+
 # FFT Plot
 fft_line, = ax2.plot([], [],'-')
 ax2.set_xlim(0, 50)  # Nyquist-Frequenz ist die Hälfte der Abtastrate
