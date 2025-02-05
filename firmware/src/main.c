@@ -253,6 +253,43 @@ int __attribute__((optimize("-O0"))) main(void) {
                 // GPIO_PB17_Clear();
 #endif                
 
+
+#ifndef STREAM_DATA                     
+
+                int32_t *ptri32;
+                uint16_t *ptru16 = (uint16_t *) adc_result_array;
+
+                ptri32 = (int32_t *) & adc_result_array32[0][0];
+                for (int ix = 0; ix < 1024; ix++) {
+                    *ptri32++ = *ptru16++;
+                    // *ptri32++ = iFLT_IIR1_Lowpass( 3, (int32_t) *ptru16++);
+                    // *ptri32++ = iFLT_IIR1_Highpass( 3, (int32_t) *ptru16++);
+                    //   *ptri32++ = iFLT_IIR1_Lowpass( 3, iFLT_IIR1_Highpass(1,(int32_t) *ptru16++) )*4;
+                }
+
+                // measured 224 milli seconds with float
+                // measured  60 milli seconds with fixpoint
+
+                //ptr = FFT_32BitInplace((uint16_t *) adc_result_array, FFT_LENGTH);
+                ptri32 = FFT_32BitInplace32((int32_t *) & adc_result_array32[0][0], FFT_LENGTH);
+                for (int ix = 0; ix < (FFT_LENGTH / 2); ix++)output_data_0[ix] = iFLT_IIR1_Lowpass(0, (*ptri32++)*20);
+
+                int32_t max_data = 0;
+                int32_t max_index = 0;
+                int32_t temp_data;
+                for (int ix = 0; ix < (FFT_LENGTH / 2); ix++) {
+                    temp_data = output_data_0[ix];
+                    if (max_data < temp_data) {
+                        max_data = temp_data;
+                        max_index = ix;
+                    }
+                }
+
+                float fFrequency_detected = (float) max_index * ((float) uSampleRate / (float) FFT_LENGTH);
+                printf("\r\nFrequency: %f\r\n", fFrequency_detected);
+#endif
+
+
 #ifdef STREAM_DATA            
 
                 dma_on = 0;
@@ -283,30 +320,30 @@ int __attribute__((optimize("-O0"))) main(void) {
                 //     Goertzel_i_Filter(&adc_result_array[1][0], output_data_1, &goertzel_integer_coeff);
 
                 // GPIO_PB17_Set();
-                
 
-                uint16_t *ptru16 = (uint16_t *)adc_result_array;                                
-//                for(int ix=0;ix<1024;ix++){
-//                    *ptru16 = iFLT_IIR1_Lowpass(1,(int32_t) *ptru16);
-//                    ptru16++;
-//                }
+
+                uint16_t *ptru16 = (uint16_t *) adc_result_array;
+                //                for(int ix=0;ix<1024;ix++){
+                //                    *ptru16 = iFLT_IIR1_Lowpass(1,(int32_t) *ptru16);
+                //                    ptru16++;
+                //                }
 
                 int32_t *ptri32;
-                                
-                ptri32 = (int32_t *)&adc_result_array32[0][0];                                
-                for(int ix=0;ix<1024;ix++){
-                     *ptri32++ = *ptru16++;
+
+                ptri32 = (int32_t *) & adc_result_array32[0][0];
+                for (int ix = 0; ix < 1024; ix++) {
+                    *ptri32++ = *ptru16++;
                     // *ptri32++ = iFLT_IIR1_Lowpass( 3, (int32_t) *ptru16++);
                     // *ptri32++ = iFLT_IIR1_Highpass( 3, (int32_t) *ptru16++);
                     //   *ptri32++ = iFLT_IIR1_Lowpass( 3, iFLT_IIR1_Highpass(1,(int32_t) *ptru16++) )*4;
                 }
-                
+
                 // measured 224 milli seconds with float
                 // measured  60 milli seconds with fixpoint
-                
+
                 //ptr = FFT_32BitInplace((uint16_t *) adc_result_array, FFT_LENGTH);
-                ptri32 = FFT_32BitInplace32((int32_t *) &adc_result_array32[0][0], FFT_LENGTH);
-                
+                ptri32 = FFT_32BitInplace32((int32_t *) & adc_result_array32[0][0], FFT_LENGTH);
+
                 // GPIO_PB17_Clear();
                 //for(int ix=0;ix<(FFT_LENGTH/2);ix++)output_data_0[ix] = (*ptr++)*20;
                 for (int ix = 0; ix < (FFT_LENGTH / 2); ix++)output_data_0[ix] = iFLT_IIR1_Lowpass(0, (*ptri32++)*20);
