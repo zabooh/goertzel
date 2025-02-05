@@ -75,7 +75,7 @@
 
 /* SIGNAL_SCALE_THRESHOLD set the threshold for the Frequency detection
  */
-#define SIGNAL_SCALE_THRESHOLD 1.4
+#define SIGNAL_SCALE_THRESHOLD 1.5
 
 
 #define ADC_VREF          (1.65f)
@@ -224,7 +224,7 @@ int __attribute__((optimize("-O1"))) main(void) {
                     if (sine_wave_table_index >= NUM_OF_SAMPLES) sine_wave_table_index = 0;
                 }
 #endif                
-                Goertzel_i_Filter(adc_result_array_1, output_data_1, &goertzel_integer_coeff);
+                Goertzel_i_Filter(&adc_result_array[1][0], output_data_1, &goertzel_integer_coeff);
                 GPIO_PB17_Clear();
 #endif                
             } else {
@@ -236,7 +236,7 @@ int __attribute__((optimize("-O1"))) main(void) {
                     if (sine_wave_table_index >= NUM_OF_SAMPLES) sine_wave_table_index = 0;
                 }
 #endif
-                Goertzel_i_Filter(adc_result_array_0, output_data_0, &goertzel_integer_coeff);
+                Goertzel_i_Filter(&adc_result_array[0][0], output_data_0, &goertzel_integer_coeff);
                 GPIO_PB17_Clear();
 #endif                
 
