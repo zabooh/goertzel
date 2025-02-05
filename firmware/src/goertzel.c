@@ -194,7 +194,7 @@ int32_t __attribute__((optimize("-O1"))) iFLT_IIR1_Lowpass(int32_t Filter, int32
      * This filter is good for smoothing noisy data
      * 
      */
-#define LP_SHIFT_VALUE_K   2
+#define LP_SHIFT_VALUE_K   1
 
     int32_t iTap;
 
